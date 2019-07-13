@@ -5,13 +5,30 @@
     <title>v-infinite-scroll</title>
 </head>
 <body>
+<style>
+    .info{
+        position: sticky;
+        top: 0;
+        float: right;
+        width: 200px;
+        background: antiquewhite;
+    }
+</style>
 <div class="app"
      style="background-color: #ccb8a0;width: 400px;margin: 0 auto;">
-
+    <div class="info">
+        <div>loading :{{loading}}</div>
+        <div>isButton :{{isButton}}</div>
+    </div>
     <div>
-        <ol v-infinite-scroll="{ load: loadList, index: 1 }">
+        <ol v-if="show"
+            v-infinite-scroll="{ load: loadList, index: 1 ,isListBottom :'isButton',loading :loading,listConfig :{maxSize :100, isListBottom:isButton}}">
             <li class="list-item" v-for="(item,i ) in items" :key="i">{{item.address}}</li>
         </ol>
+    </div>
+
+    <div v-if="isButton">
+        到底了
     </div>
 
 </div>
@@ -23,15 +40,21 @@
 
     new Vue({
         el: app,
-        data: () => ({page: 1, items: []}),
+        data: () => ({page: 1, items: [], show: false, isButton: false, loading: false}),
         mounted() {
+            var self = this;
             this.loadList()
+            setTimeout(function () {
+                self.show = true
+            }, 2000)
         },
         methods: {
             async loadList() {
+                this.loading = true;
                 const res = await fetch('https://easy-mock.com/mock/5d27eeea9f495504afdc6b95/example/mock');
                 this.page++;
-                this.items = [...this.items, ...await res.json().data];
+                this.items = [...this.items, ...(await res.json()).data];
+                this.loading =false
             }
         }
     })

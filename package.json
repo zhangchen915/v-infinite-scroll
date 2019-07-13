@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "intersection-observer": "^0.7.0",
+    "throttle-debounce": "^2.1.0",
     "vue": "^2.6.10"
   },
   "devDependencies": {

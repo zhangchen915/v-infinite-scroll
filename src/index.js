@@ -1,4 +1,5 @@
 import 'intersection-observer'
+import {throttle} from 'throttle-debounce'
 
 const ctx = Symbol();
 let observer, observerTarget;
@@ -11,7 +12,7 @@ const infiniteScroll = {
             config: binding.value
         };
         const {
-            index = 1, load, disable = false, isListBottom, listConfig = {
+            index = 1, load, disable = false, isListBottom, scroll, listConfig = {
                 maxSize: 0,
                 page: 0
             }, observerOption = {
@@ -23,7 +24,13 @@ const infiniteScroll = {
 
         if (typeof load !== "function") throw new ReferenceError('load argument must be function!');
 
+        if (scroll) el.addEventListener('scroll', throttle(500, true, e => {
+                scroll(e)
+        }), true);
+
         el[ctx].vm.$on('hook:updated', () => {
+            console.log('updated')
+            if (disable) return;
             el[ctx].vm.$nextTick(() => {
                 const list = el[ctx].el;
                 const listSize = list.childElementCount;
@@ -34,7 +41,7 @@ const infiniteScroll = {
                 observer = new IntersectionObserver(([entry]) => {
                     if (entry && entry.isIntersecting) {
                         if (listSize < listConfig.maxSize) {
-                           load(entry)
+                            load(entry)
                         } else {
                             vnode.context[isListBottom] = true;
                             infiniteScroll.unbind(el)

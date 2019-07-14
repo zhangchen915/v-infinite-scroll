@@ -4,15 +4,21 @@ import {throttle} from 'throttle-debounce'
 const ctx = Symbol();
 let observer, observerTarget;
 
+function scrollPosition(el) {
+    const parent = el.parentNode;
+    return (el.scrollTop || parent.scrollTop) / (el.scrollHeight - el.clientHeight) * 100;
+}
+
 const infiniteScroll = {
     bind(el, binding, vnode) {
         el[ctx] = {
-            el,
             vm: vnode.context,
             config: binding.value
         };
         const {
-            index = 1, load, disable = false, isListBottom, scroll, listConfig = {
+            index = 1, load, disable = false, isListBottom, scroll = {
+                throttleTime: 0
+            }, listConfig = {
                 maxSize: 0,
                 page: 0
             }, observerOption = {
@@ -24,20 +30,17 @@ const infiniteScroll = {
 
         if (typeof load !== "function") throw new ReferenceError('load argument must be function!');
 
-        if (scroll) el.addEventListener('scroll', throttle(500, true, e => {
-                scroll(e)
-        }), true);
+        if (scroll && scroll.throttleTime) el.addEventListener('scroll', throttle(scroll.throttleTime, true,
+            e => scroll.cb(scrollPosition(el), e)), true);
 
         el[ctx].vm.$on('hook:updated', () => {
-            console.log('updated')
             if (disable) return;
             el[ctx].vm.$nextTick(() => {
-                const list = el[ctx].el;
-                const listSize = list.childElementCount;
-                if (!list.childNodes.length) return;
+                const listSize = el.childElementCount;
+                if (!el.childNodes.length) return;
                 if (index >= listSize) throw new RangeError(`max index value is ${listSize} but get ${index} !`);
                 if (observer && observerTarget) observer.unobserve(observerTarget);
-                observerTarget = list.childNodes.item(list.childElementCount - index);
+                observerTarget = el.childNodes.item(el.childElementCount - index);
                 observer = new IntersectionObserver(([entry]) => {
                     if (entry && entry.isIntersecting) {
                         if (listSize < listConfig.maxSize) {
@@ -49,11 +52,10 @@ const infiniteScroll = {
                     }
                 }, observerOption);
 
-                observer.observe(list.childNodes.item(list.childElementCount - index));
+                observer.observe(el.childNodes.item(el.childElementCount - index));
             });
         });
     },
-
     unbind(el) {
         if (el && el[ctx] && observer && observerTarget)
             observer.unobserve(observerTarget);

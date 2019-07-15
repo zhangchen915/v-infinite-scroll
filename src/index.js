@@ -3,6 +3,7 @@ import {throttle} from 'throttle-debounce'
 
 const ctx = Symbol();
 let observer, observerTarget;
+let currentListSize = 0;
 
 function scrollPosition(el) {
     const parent = el.parentNode;
@@ -37,9 +38,11 @@ const infiniteScroll = {
             if (disable) return;
             el[ctx].vm.$nextTick(() => {
                 const listSize = el.childElementCount;
-                if (!el.childNodes.length) return;
+                if (!listSize || currentListSize === listSize) return;
                 if (index >= listSize) throw new RangeError(`max index value is ${listSize} but get ${index} !`);
                 if (observer && observerTarget) observer.unobserve(observerTarget);
+
+                currentListSize = listSize;
                 observerTarget = el.childNodes.item(el.childElementCount - index);
                 observer = new IntersectionObserver(([entry]) => {
                     if (entry && entry.isIntersecting) {

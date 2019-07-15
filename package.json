@@ -1,13 +1,31 @@
 {
-  "name": "v-infinite-scroll",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "v-infinite-scroller",
+  "version": "0.1.0",
+  "description": "A new vue infinite scroll directive achieve by intersectionObserver API and polyfill.",
+  "keywords": [
+    "vue",
+    "infinite-scroll",
+    "intersectionObserver"
+  ],
+  "main": "dist/infiniteScroll.js",
   "scripts": {
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "prepublish": "npm run build"
   },
-  "author": "zhangchen",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zhangchen915/v-infinite-scroll"
+  },
+  "bugs": {
+    "url": "https://github.com/zhangchen915/v-infinite-scroll/issues"
+  },
+  "homepage": "https://github.com/zhangchen915/v-infinite-scroll#readme",
+  "author": {
+    "name": "zhangchen915",
+    "email": "zhangchen915@outlook.com",
+    "url": "https://zhangchen915.com"
+  },
+  "license": "MIT",
   "dependencies": {
     "intersection-observer": "^0.7.0",
     "throttle-debounce": "^2.1.0",

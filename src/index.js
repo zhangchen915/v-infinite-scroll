@@ -18,7 +18,7 @@ const infiniteScroll = {
         };
         const {
             index = 1, load, disable = false, isListBottom, scroll = {
-                throttleTime: 0
+                throttleTime: 200
             }, listConfig = {
                 maxSize: 0,
                 page: 0

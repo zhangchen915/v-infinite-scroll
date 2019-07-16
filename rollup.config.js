@@ -3,8 +3,8 @@ import nodeResolve from 'rollup-plugin-node-resolve';
 export default {
     input: 'src/index.js',
     output: {
-        name: 'infiniteScroll',
-        file: 'dist/infiniteScroll.js',
+        name: 'lazy',
+        file: 'dist/lazy-load.js',
         format: 'umd',
     },
     plugins: [

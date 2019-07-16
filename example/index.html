@@ -6,29 +6,48 @@
 </head>
 <body>
 <style>
+    .app {
+        width: 400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 300px 300px 1fr;
+        height: 300px;
+    }
+
+    .list,.img{
+        height: inherit;
+        overflow-y: scroll;
+    }
+
+    .list {
+        grid-row: 1/2;
+    }
+
     .info {
         position: sticky;
         top: 0;
         float: right;
         width: 200px;
-        background: antiquewhite;
     }
 
     ol {
-        height: 500px;
         width: 230px;
-        overflow-y: scroll;
     }
 
+    img{
+        width: 200px;
+        height: 150px;
     }
+
+
 </style>
-<div class="app"
-     style="background-color: #ccb8a0;width: 400px;margin: 0 auto;">
-    <div class="info">
-        <div>loading :{{loading}}</div>
-        <div>isButton :{{isButton}}</div>
-    </div>
-    <div>
+<div class="app">
+
+    <div class="list">
+        <div class="info">
+            <div>loading :{{loading}}</div>
+            <div>isButton :{{isButton}}</div>
+        </div>
         <ol v-if="show"
             v-infinite-scroll="
              {
@@ -39,15 +58,22 @@
                     throttleTime: 500
                 },
                 isListBottom: 'isButton',
-                listConfig: {maxSize: 100}
+                listConfig: {maxSize: 30}
             }">
             <li class="list-item" v-for="(item,i ) in items" :key="i">{{item.address}}</li>
         </ol>
+        <div v-if="isButton">到底了</div>
     </div>
 
-    <div v-if="isButton">
-        到底了
+    <div class="img">
+        <ul>
+            <li v-for="(item,i ) in Array(10)">
+                <img v-img :src="`https://source.unsplash.com/400x300/?nature,water/${i}`">
+            </li>
+        </ul>
     </div>
+
+
 
 </div>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
@@ -55,6 +81,7 @@
 <script>
     const app = document.querySelector('.app');
     Vue.use(lazy.loadList);
+    Vue.use(lazy.loadImage);
 
     new Vue({
         el: app,
@@ -72,6 +99,7 @@
             },
             async loadList() {
                 this.loading = true;
+                console.log('trigger load');
                 const res = await fetch('https://easy-mock.com/mock/5d27eeea9f495504afdc6b95/example/mock');
                 this.page++;
                 this.items = [...this.items, ...(await res.json()).data];

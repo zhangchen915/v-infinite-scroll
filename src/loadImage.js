@@ -28,7 +28,7 @@ const loadImage = option => ({
 
         if (el[ctx].config.loading) el.src = el[ctx].config.loading;
     },
-    componentUpdated(el, binding, vnode) {
+    inserted(el, binding, vnode) {
         if (!el[ctx].config.src) return;
         const observer = new IntersectionObserver(([entry]) => {
             if (entry && entry.isIntersecting) {

@@ -1,5 +1,13 @@
 const ctx = Symbol();
 
+function assign(target, source) {
+    if (typeof source !== "object") return source;
+    for (let key in source) {
+        if (source.hasOwnProperty(key)) target[key] = typeof source[key] === "object" ? assign(source[key]) : source[key];
+    }
+    return target;
+}
+
 const loadImage = option => ({
     bind(el, binding, vnode) {
         el[ctx] = {
@@ -8,8 +16,7 @@ const loadImage = option => ({
         };
 
         if (typeof binding.value === "string") el[ctx].config = {src: binding.value};
-        el[ctx].config = Object.assign(option, el[ctx].config);
-        console.log(el[ctx].config)
+        el[ctx].config = assign(el[ctx].config, option);
 
         const {
             loading = '',
@@ -32,7 +39,6 @@ const loadImage = option => ({
         if (!el[ctx].config.src) return;
         const observer = new IntersectionObserver(([entry]) => {
             if (entry && entry.isIntersecting) {
-                console.log(el[ctx].config.src);
                 el.nodeName === "IMG" ? el.src = el[ctx].config.src : el.style.backgroundImage = `url(${el[ctx].config.src})`;
                 observer.unobserve(el);
             }

@@ -47,7 +47,7 @@
     <div class="list">
         <div class="info">
             <div>loading :{{loading}}</div>
-            <div>isButton :{{isButton}}</div>
+            <div>isBottom:{{isBottom}}</div>
         </div>
         <ol v-if="show"
             v-infinite-scroll="
@@ -58,12 +58,13 @@
                     cb: scroll,
                     throttleTime: 500
                 },
-                isListBottom: 'isButton',
+                isListBottom: 'isBottom',
+                loading: 'loading',
                 listConfig: {maxSize: 100}
             }">
             <li class="list-item" v-for="(item,i ) in items" :key="i">{{item.address}}</li>
         </ol>
-        <div v-if="isButton">到底了</div>
+        <div v-if="isBottom">到底了</div>
     </div>
 
     <div class="img">
@@ -89,25 +90,23 @@
 
     new Vue({
         el: app,
-        data: () => ({page: 1, items: [], show: false, isButton: false, loading: false}),
+        data: () => ({page: 1, items: [], show: true, isBottom: false, loading: false}),
         mounted() {
-            var self = this;
-            this.loadList()
-            setTimeout(function () {
-                self.show = true
-            }, 1000)
+            // var self = this;
+            // this.loadList()
+            // setTimeout(function () {
+            //     self.show = true
+            // }, 1000)
         },
         methods: {
             scroll(offsetTop) {
                 console.log(offsetTop)
             },
             async loadList() {
-                this.loading = true;
                 console.log('trigger load');
                 const res = await fetch('https://easy-mock.com/mock/5d27eeea9f495504afdc6b95/example/mock');
                 this.page++;
                 this.items = [...this.items, ...(await res.json()).data];
-                this.loading = false
             }
         }
     })

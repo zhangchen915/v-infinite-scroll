@@ -16,7 +16,7 @@ const infiniteScroll = {
             config: binding.value
         };
         const {
-            index = 1, load, disable = false, isListBottom, scroll = {
+            index = 1, load, loading = '', disable = false, isListBottom, scroll = {
                 throttleTime: 200
             }, listConfig = {
                 maxSize: 0,
@@ -33,6 +33,18 @@ const infiniteScroll = {
         if (scroll && scroll.throttleTime) el.addEventListener('scroll', throttle(scroll.throttleTime, true,
             e => scroll.cb(scrollPosition(el), e)), true);
 
+        const loadList = async entry => {
+            if (loading) {
+                vnode.context[loading] = true;
+                await load(entry);
+                vnode.context[loading] = false;
+            } else {
+                await load(entry);
+            }
+        };
+
+        loadList();
+
         el[ctx].vm.$on('hook:updated', () => {
             if (disable) return;
             el[ctx].vm.$nextTick(() => {
@@ -43,14 +55,13 @@ const infiniteScroll = {
 
                 currentListSize = listSize;
                 observerTarget = el.childNodes.item(el.childElementCount - index);
-                observer = new IntersectionObserver(([entry]) => {
-                    if (entry && entry.isIntersecting) {
-                        if (listSize < listConfig.maxSize) {
-                            load(entry)
-                        } else {
-                            vnode.context[isListBottom] = true;
-                            infiniteScroll.unbind(el)
-                        }
+                observer = new IntersectionObserver(async ([entry]) => {
+                    if (!entry.isIntersecting) return;
+                    if (listSize < listConfig.maxSize) {
+                        await loadList(entry)
+                    } else {
+                        vnode.context[isListBottom] = true;
+                        infiniteScroll.unbind(el)
                     }
                 }, observerOption);
 

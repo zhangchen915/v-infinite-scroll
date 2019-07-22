@@ -1,5 +1,5 @@
 {
-  "name": "v-infinite-scroller",
+  "name": "v-lazyload",
   "version": "0.1.0",
   "description": "A new vue infinite scroll directive achieve by intersectionObserver API and polyfill.",
   "keywords": [
@@ -7,7 +7,7 @@
     "infinite-scroll",
     "intersectionObserver"
   ],
-  "main": "dist/infiniteScroll.js",
+  "main": "dist/lazy-load.js",
   "scripts": {
     "build": "rollup -c",
     "prepublish": "npm run build"

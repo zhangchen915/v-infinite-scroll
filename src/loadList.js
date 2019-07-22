@@ -57,11 +57,11 @@ const infiniteScroll = {
                 observerTarget = el.childNodes.item(el.childElementCount - index);
                 observer = new IntersectionObserver(async ([entry]) => {
                     if (!entry.isIntersecting) return;
-                    if (listSize < listConfig.maxSize) {
-                        await loadList(entry)
-                    } else {
+                    if (listConfig.maxSize && listSize > listConfig.maxSize) {
                         vnode.context[isListBottom] = true;
-                        infiniteScroll.unbind(el)
+                        infiniteScroll.unbind(el);
+                    } else {
+                        await loadList(entry)
                     }
                 }, observerOption);
 

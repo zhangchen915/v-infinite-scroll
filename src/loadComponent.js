@@ -1,4 +1,4 @@
-export function loadComponent({componentFactory, loading, loadingData}) {
+export function loadComponent({componentFactory, loading, loadingData ,ErrorComponent}) {
     let resolveComponent;
 
     return () => ({
@@ -24,5 +24,11 @@ export function loadComponent({componentFactory, loading, loadingData}) {
                 return createElement(loading, loadingData);
             },
         },
+        error: ErrorComponent,
+        // Delay before showing the loading component. Default: 200ms.
+        delay: 200,
+        // The error component will be displayed if a timeout is
+        // provided and exceeded. Default: Infinity.
+        timeout: 3000
     });
 }

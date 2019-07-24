@@ -7,10 +7,9 @@
 <body>
 <style>
     .app {
-        width: 400px;
         margin: 0 auto;
         display: grid;
-        grid-template-columns: 300px 300px 1fr;
+        grid-template-columns: 300px 300px 300px 1fr;
         height: 300px;
     }
 
@@ -75,14 +74,25 @@
         </ul>
     </div>
 
-
-
+    <div class="img">
+        <ul>
+            <li>
+                <img v-img="`https://source.unsplash.com/400x300/?nature,water/1`">
+                <img v-img="`https://source.unsplash.com/400x300/?nature,water/2`">
+                <img v-img="`https://source.unsplash.com/400x300/?nature,water/3`">
+                <img v-img="`https://source.unsplash.com/400x300/?nature,water/5`" v-intersect:enter="intersect">
+                <img v-img="`https://source.unsplash.com/400x300/?nature,water/f`">
+                <img v-img="`https://source.unsplash.com/400x300/?nature,water/1s`">
+            </li>
+        </ul>
+    </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script src="../dist/lazy-load.js"></script>
-<script>
+<script type="module">
     const app = document.querySelector('.app');
     Vue.use(lazy.loadList);
+    Vue.use(lazy.intersect);
     Vue.use(lazy.loadImage,{
         loading: 'https://loading.io/spinners/double-ring/index.double-ring-spinner.svg',
         observerOption:{}
@@ -99,6 +109,9 @@
             // }, 1000)
         },
         methods: {
+            intersect(e){
+                console.log(e)
+            },
             scroll(offsetTop) {
                 console.log(offsetTop)
             },

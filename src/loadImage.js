@@ -9,6 +9,53 @@ function supportWebp() {
     return false;
 }
 
+function config(config, option) {
+    if (typeof config === "string") config = {src: config};
+    return Object.assign(config, option);
+}
+
+function setUrl(el, src, backgroundStyle) {
+    if (el.nodeName === "IMG") {
+        el.src = src
+    } else {
+        el.style.backgroundImage = `url(${src})`;
+        if (backgroundStyle) {
+            el.style.backgroundSize = backgroundStyle.size || 'cover';
+            el.style.backgroundPosition = backgroundStyle.position || 'center';
+            el.style.backgroundRepeat = backgroundStyle.repeat || 'no-repeat'
+        }
+    }
+}
+
+function setObserver(el) {
+    let {
+        src,
+        webp,
+        backgroundStyle,
+        observerOption = {
+            root: null,
+            rootMargin: "0px",
+            threshold: [0]
+        }
+    } = el[ctx].config;
+
+    if (!src && !el[ctx].content) return;
+
+    const observer = new IntersectionObserver(([entry]) => {
+        if (webp) src = window[isWebp] ? webp(src) : src;
+        if (entry && entry.isIntersecting) {
+            if (el[ctx].content) {
+                el[ctx].content.forEach(e => setUrl(e, src, backgroundStyle))
+            } else {
+                setUrl(el, src, backgroundStyle)
+            }
+            observer.unobserve(el);
+            el[ctx] = null;
+        }
+    }, observerOption);
+    observer.observe(el);
+}
+
 const loadImage = option => ({
     bind(el, binding, vnode) {
         el[ctx] = {
@@ -16,43 +63,32 @@ const loadImage = option => ({
             config: binding.value
         };
 
-        if (typeof binding.value === "string") el[ctx].config = {src: binding.value};
-        el[ctx].config = Object.assign(el[ctx].config, option);
+        el[ctx].config = config(binding.value, option);
 
         if (el[ctx].config.loading) el.src = el[ctx].config.loading;
     },
-    inserted(el, binding, vnode) {
-        const {
-            webp,
-            backgroundConfig = {
-                size: 'cover',
-                position: 'center',
-                repeat: 'no-repeat'
-            },
-            observerOption = {
-                root: null,
-                rootMargin: "0px",
-                threshold: [0]
-            }
-        } = el[ctx].config;
-
-        if (!el[ctx].config.src) return;
-        const observer = new IntersectionObserver(([entry]) => {
-            let src = el[ctx].config.src;
-            if (webp) src = window[isWebp] ? webp(src) : src;
-            if (entry && entry.isIntersecting) {
-                el.nodeName === "IMG" ? el.src = src : el.style.backgroundImage = `url(${src})`;
-                observer.unobserve(el);
-                el[ctx] = null;
-            }
-        }, observerOption);
-        observer.observe(el);
+    inserted(el) {
+        setObserver(el)
     },
     unbind(el) {
+        el[ctx] = null;
     }
 });
 
-const loadImageContent = option => ({});
+const loadImageContent = option => ({
+    bind(el, binding, vnode) {
+        const els = el.querySelectorAll('[data-src]');
+        el[ctx] = {
+            vm: vnode.context,
+            content: els
+        };
+        if (els.length && option.loading) els.forEach(e => setUrl(e, option.loading))
+    },
+    inserted(el) {
+        if (el[ctx].content.length) return;
+        setObserver(el)
+    },
+});
 
 export default {
     install: (Vue, options = {}) => {

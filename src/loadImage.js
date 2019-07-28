@@ -39,14 +39,15 @@ function setObserver(el) {
         }
     } = el[ctx].config;
 
-    if (!src && !el[ctx].content) return;
+    if (!src) return;
 
     const observer = new IntersectionObserver(([entry]) => {
-        if (webp) src = window[isWebp] ? webp(src) : src;
         if (entry && entry.isIntersecting) {
             if (el[ctx].content) {
-                el[ctx].content.forEach(e => setUrl(e, src, backgroundStyle))
+                if (webp) src = window[isWebp] ? src.map(e => webp(e)) : src;
+                el[ctx].content.forEach((e, i) => setUrl(e, src[i], backgroundStyle))
             } else {
+                if (webp) src = window[isWebp] ? webp(src) : src;
                 setUrl(el, src, backgroundStyle)
             }
             observer.unobserve(el);
@@ -77,15 +78,17 @@ const loadImage = option => ({
 
 const loadImageContent = option => ({
     bind(el, binding, vnode) {
-        const els = el.querySelectorAll('[data-src]');
+        const els = Array.from(el.querySelectorAll('[data-src]'));
+        option.src = els.map(e => e.getAttribute('data-src'));
         el[ctx] = {
             vm: vnode.context,
+            config: option,
             content: els
         };
         if (els.length && option.loading) els.forEach(e => setUrl(e, option.loading))
     },
     inserted(el) {
-        if (el[ctx].content.length) return;
+        if (!el[ctx].content.length) return;
         setObserver(el)
     },
 });
@@ -97,6 +100,6 @@ export default {
         if (options.loading) new Image().src = options.loading;
         if (options.webp && typeof options.webp !== "function") throw new ReferenceError('webp must be function!');
         Vue.directive("img", loadImage(options));
-        Vue.directive("img-content", loadImageContent)
+        Vue.directive("img-content", loadImageContent(options))
     }
 }

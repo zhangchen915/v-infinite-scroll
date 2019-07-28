@@ -39,6 +39,10 @@
         height: 150px;
     }
 
+    .img-content img{
+        width: 30%;
+    }
+
 
 </style>
 <div class="app">
@@ -83,6 +87,13 @@
                 <img v-img="`https://source.unsplash.com/400x300/?nature,water/5`" v-intersect:enter="intersect">
                 <img v-img="`https://source.unsplash.com/400x300/?nature,water/f`">
                 <img v-img="`https://source.unsplash.com/400x300/?nature,water/1s`">
+            </li>
+            <li>
+                <div class="img-content" v-img-content>
+                    <img data-src="https://source.unsplash.com/400x300/?nature,water/s1">
+                    <img data-src="https://source.unsplash.com/400x300/?nature,water/s2">
+                    <img data-src="https://source.unsplash.com/400x300/?nature,water/s3">
+                </div>
             </li>
         </ul>
     </div>

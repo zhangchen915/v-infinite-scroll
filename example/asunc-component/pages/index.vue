@@ -1,0 +1,36 @@
+<template>
+  <ul>
+    <li v-for="(post, index) in posts" :key="index">
+      <h3>{{ post.date }}</h3>
+      <h2>
+        <NuxtLink :to="post.link">
+          {{ post.title }}
+        </NuxtLink>
+      </h2>
+    </li>
+    <li style="border:none;text-align: center;font-size: 14px;">
+      Design from <a href="http://blog.evanyou.me" target="_blank">
+        EvanYou.me
+      </a>
+    </li>
+  </ul>
+</template>
+
+<script>
+import {Vue} from 'vue';
+import {loadComponent} from '../../../src/index'
+
+Vue.use(loadComponent,{
+  error:  require('@/posts/404')
+});
+export default {
+  data: () => ({
+    posts: [
+      { date: 'Jul 10, 2017', title: 'Deep111 dive into the Ocean', link: '/deep-dive-into-ocean' },
+      { date: 'Jul 08, 2017', title: 'Welcome to my blog', link: '/welcome-to-my-blog' }
+    ]
+  })
+}
+</script>
+
+<style src="@/assets/css/index.css"/>

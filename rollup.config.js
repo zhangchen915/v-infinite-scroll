@@ -5,7 +5,7 @@ export default {
     output: {
         name: 'lazy',
         file: 'dist/lazy-load.js',
-        format: 'esm',
+        format: 'umd',
     },
     plugins: [
         nodeResolve({

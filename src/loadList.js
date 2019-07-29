@@ -18,10 +18,7 @@ const infiniteScroll = {
         const {
             index = 1, load, loading = '', disable = false, isListBottom, scroll = {
                 throttleTime: 200
-            }, listConfig = {
-                maxSize: 0,
-                page: 0
-            }, observerOption = {
+            }, max, observerOption = {
                 root: null,
                 rootMargin: "0px",
                 threshold: [0]
@@ -57,7 +54,7 @@ const infiniteScroll = {
                 observerTarget = el.childNodes.item(el.childElementCount - index);
                 observer = new IntersectionObserver(async ([entry]) => {
                     if (!entry.isIntersecting) return;
-                    if (listConfig.maxSize && listSize > listConfig.maxSize) {
+                    if (max && listSize > max) {
                         vnode.context[isListBottom] = true;
                         infiniteScroll.unbind(el);
                     } else {

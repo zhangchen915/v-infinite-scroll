@@ -1,19 +1,22 @@
-function asyncComponent({componentFactory, loading, loadingData, ErrorComponent}) {
+function asyncComponent({componentFactory, wrapElement, loading, loadingData, ErrorComponent, observerOption}) {
     let resolveComponent;
-
     return () => ({
         component: new Promise(resolve => resolveComponent = resolve),
         loading: {
             mounted() {
                 const observer = new IntersectionObserver(([entries]) => {
                     if (!entries.isIntersecting) return;
-                    observer.unobserve(this.$el);
+                    observer.unobserve(wrapElement);
                     componentFactory().then(resolveComponent);
+                }, observerOption = {
+                    root: null,
+                    rootMargin: "0px",
+                    threshold: [0]
                 });
-                observer.observe(this.$el);
+                observer.observe(wrapElement);
             },
-            render(createElement) {
-                return createElement(loading, loadingData);
+            render(h) {
+                return h(loading, loadingData);
             },
         },
         error: ErrorComponent,
@@ -24,7 +27,13 @@ function asyncComponent({componentFactory, loading, loadingData, ErrorComponent}
 
 export default {
     install: (Vue, option) => {
-        Vue.prototype.$loadComponent = componentFactory =>
-            asyncComponent(Object.assign(option, {componentFactory}))
+        console.log(option)
+        Vue.prototype.$loadComponent = (componentFactory, wrapElement) => {
+            console.log(wrapElement)
+            return asyncComponent(Object.assign(option, {
+                componentFactory,
+                wrapElement
+            }))
+        }
     }
 }

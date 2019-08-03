@@ -46,7 +46,7 @@ const infiniteScroll = {
             if (disable) return;
             el[ctx].vm.$nextTick(() => {
                 const listSize = el.childElementCount;
-                if (!listSize || currentListSize === listSize) return;
+                if (!listSize || currentListSize === listSize || listSize <= index) return;
                 if (index >= listSize) throw new RangeError(`max index value is ${listSize} but get ${index} !`);
                 if (observer && observerTarget) observer.unobserve(observerTarget);
 

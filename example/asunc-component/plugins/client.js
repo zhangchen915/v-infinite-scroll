@@ -1,4 +1,4 @@
-import Vue from '../node_modules/vue';
+import Vue from 'vue';
 
 import {loadComponent} from '../../../src/index'
 

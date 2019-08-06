@@ -20,16 +20,13 @@ function asyncComponent({componentFactory, wrapElement, loading, loadingData, Er
             },
         },
         error: ErrorComponent,
-        delay: 200,
-        timeout: 3000
+        delay: 200
     });
 }
 
 export default {
     install: (Vue, option) => {
-        console.log(option)
         Vue.prototype.$loadComponent = (componentFactory, wrapElement) => {
-            console.log(wrapElement)
             return asyncComponent(Object.assign(option, {
                 componentFactory,
                 wrapElement

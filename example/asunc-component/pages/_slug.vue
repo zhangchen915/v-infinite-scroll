@@ -1,19 +1,21 @@
 <template>
     <div class="post">
-        <component></component>
+        <div style="height: 110vh"></div>
+        <div class="wrap">
+            <div :is="content"></div>
+        </div>
     </div>
 </template>
 
 <script>
     export default {
-        components: {
-            'component': () => this.$loadComponent(import(`@/posts/${this.$route.params.slug}`), document.querySelector('.post'))
+        components: {},
+        data() {
+            return {content: ''}
+        },
+        mounted() {
+            this.content = this.$loadComponent(() => import(`@/posts/${this.$route.params.slug}`), document.querySelector('.wrap'))
         }
-        // mounted() {
-        //     console.log( document.querySelector('.post'))
-        //
-        //     this.content = this.$loadComponent(import(`@/posts/${this.$route.params.slug}`), document.querySelector('.post'))
-        // }
     }
 </script>
 

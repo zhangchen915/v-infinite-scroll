@@ -99,8 +99,8 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-<script src="../dist/lazy-load.js"></script>
-<script type="module">
+<script src="../dist/lazy-load.umd.js"></script>
+<script>
     const app = document.querySelector('.app');
     Vue.use(lazy.loadList);
     Vue.use(lazy.intersect);
@@ -113,11 +113,6 @@
         el: app,
         data: () => ({page: 1, items: [], show: true, isBottom: false, loading: false}),
         mounted() {
-            // var self = this;
-            // this.loadList()
-            // setTimeout(function () {
-            //     self.show = true
-            // }, 1000)
         },
         methods: {
             intersect(e){

@@ -1,13 +1,13 @@
 {
   "name": "v-lazyload",
-  "version": "0.1.0",
-  "description": "A new vue infinite scroll directive achieve by intersectionObserver API and polyfill.",
+  "version": "0.1.1",
+  "description": "A new vue lazy load directive achieve by intersectionObserver API and polyfill.",
   "keywords": [
     "vue",
     "infinite-scroll",
     "intersectionObserver"
   ],
-  "main": "dist/lazy-load.js",
+  "module": "dist/lazy-load.esm.js",
   "scripts": {
     "build": "rollup -c",
     "prepublish": "npm run build"

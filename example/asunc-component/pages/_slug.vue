@@ -1,9 +1,7 @@
 <template>
     <div class="post">
         <div style="height: 110vh"></div>
-        <div class="wrap">
-            <div :is="content"></div>
-        </div>
+        <div :is="content"></div>
     </div>
 </template>
 
@@ -14,7 +12,7 @@
             return {content: ''}
         },
         mounted() {
-            this.content = this.$loadComponent(() => import(`@/posts/${this.$route.params.slug}`), document.querySelector('.wrap'))
+            this.content = this.$loadComponent(() => import(`@/posts/${this.$route.params.slug}`))
         }
     }
 </script>

@@ -1,4 +1,4 @@
-function asyncComponent({componentFactory, loading = 'div', loadingData = 'loading', ErrorComponent, observerOption}) {
+function asyncComponent({componentFactory, loading = 'div', loadingData = 'loading', errorComponent, observerOption}) {
     let resolveComponent;
     return () => ({
         component: new Promise(resolve => resolveComponent = resolve),
@@ -19,7 +19,7 @@ function asyncComponent({componentFactory, loading = 'div', loadingData = 'loadi
                 return h(loading, loadingData);
             },
         },
-        error: ErrorComponent,
+        error: errorComponent,
         delay: 200
     });
 }

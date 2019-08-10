@@ -2,7 +2,7 @@
 
 ![](https://img.shields.io/badge/license-MIT-green.svg)
 
-A new vue lazyload directive achieve by intersectionObserver API and polyfill.
+A new vue lazy load directive achieve by intersectionObserver API and polyfill.
 
 ## Installation
 `npm i v-lazyload --save`
@@ -18,7 +18,7 @@ A new vue lazyload directive achieve by intersectionObserver API and polyfill.
 | scroll.throttleTime             | number              | optional | 200    | listens to the window scroll instead of the actual element scroll. this allows to invoke a callback function in the scope of the element while listening to the window scroll.                                                                                                                       |
 | isListBottom   | string              | optional | -   | the date name of isListBottom                                                                                                                                                                                                                                                      |
 | max | number | optional | - | max size of the list |
-| observerOption | object | optional |  |  |
+| observerOption | object | optional |  | [IntersectionObserver options](https://developer.mozilla.org/en-US/docs/Web/API/IntersectionObserver/IntersectionObserver#Parameters) |
 ### Example
 
 ```html
@@ -39,15 +39,6 @@ A new vue lazyload directive achieve by intersectionObserver API and polyfill.
 ```
 
 ## v-img
-
-| attribute                 | Type                 | Required | Default | Description                                                                                                                                                                                                                                                                                           |
-| ------------------------ | -------------------- | -------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| disable           | boolean              | optional | true   |
-| load                     | function             | yes | -       | load more function |
-| index | number               | optional | 1     | the countdown index item trig load                                                                                                                                                                                                                                                                                  |
-| scroll.cb   | function               | optional | - |                                                                                                                                                |
-| scroll.throttleTime             | number              | optional | 200    | listens to the window scroll instead of the actual element scroll. this allows to invoke a callback function in the scope of the element while listening to the window scroll.                                                                                                                       |                                                                                                                        |
-| isListBottom   | string              | optional | -   | the date name of isListBottom                                                                                                                                                                                                                                                      |
 ### Example
 
 ```html
@@ -69,6 +60,21 @@ Vue.use(loadImage,{
         loading: 'https://loading.io/spinners/double-ring/index.double-ring-spinner.svg',
         observerOption:{}
 });
+```
+
+```css
+img {
+    width: 200px;
+    height: 150px;
+    transition: opacity 0.3s;
+}
+
+img[loading] {
+    opacity: 0;
+}
+img[loaded] {
+    opacity: 1;
+}
 ```
 
 ## v-img-content
@@ -104,3 +110,36 @@ data-src={
 
 ## load-component
 
+### Example
+
+```js
+Vue.use(loadComponent,{
+    loading : 'div', 
+    loadingData : 'loading', 
+    errorComponent:  require('@/posts/404'),
+    observerOption:{}
+});
+```
+
+### nuxt
+```vue
+// loadComponent must be used in client mode
+<template>
+    <div class="post">
+        <div style="height: 110vh"></div>
+        <div :is="content"></div>
+    </div>
+</template>
+
+<script>
+    export default {
+        components: {},
+        data() {
+            return {content: ''}
+        },
+        mounted() {
+            this.content = this.$loadComponent(() => import(`content.vue`))
+        }
+    }
+</script>
+```

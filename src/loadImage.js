@@ -16,7 +16,11 @@ function config(config, option) {
 
 function setUrl(el, src, backgroundStyle) {
     if (el.nodeName === "IMG") {
-        el.src = src
+        el.src = src;
+        el.setAttribute('loading', '');
+        el.onload = () => {
+            el.setAttribute('loaded', '')
+        }
     } else {
         el.style.backgroundImage = `url(${src})`;
         if (backgroundStyle) {

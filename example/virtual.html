@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>v-infinite-scroll</title>
+</head>
+<body>
+<style>
+    .app {
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 300px 300px 300px 1fr;
+        height: 300px;
+    }
+
+    .item {
+        height: 20vh;
+        text-align: center;
+        border: dashed 1px gray;
+    }
+</style>
+<div class="app">
+
+    <div class="list-wrap">
+        <div class="list" ref="list">
+            <div :key="sentry + i" class="item" v-for="(e, i) in listContent">{{ sentry + i }}</div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script>
+    const app = document.querySelector('.app');
+    const LIST_SIZE = 14;
+
+    function observer(el, cb) {
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry && entry.isIntersecting) {
+                    cb();
+                    observer.unobserve(el)
+                }
+            },
+            {
+                root: null,
+                rootMargin: '0px',
+                threshold: [0]
+            }
+        );
+        observer.observe(el);
+        return observer
+    }
+
+    new Vue({
+        el: app,
+        data() {
+            return {
+                content: [],
+                listContent: [],
+                sentry: 0,
+                page: 0,
+                style: {},
+                bottomSentry: LIST_SIZE,
+                observer: []
+            }
+        },
+        created() {
+            this.update();
+            this.setContent()
+        },
+        mounted() {
+            const listCount = this.$refs.list.childElementCount;
+            console.log(this.$refs.list.childNodes[listCount - 1]);
+            this.observer = [
+                void 0,
+                observer(this.$refs.list.childNodes[LIST_SIZE - 1], this.nextBlock)
+            ]
+        },
+        methods: {
+            load() {
+                this.content = [
+                    ...this.content,
+                    ...Array.from(Array(20)).map(() => Math.random() * this.page)
+                ]
+            },
+            setContent(size = LIST_SIZE) {
+                this.listContent = this.content.slice(this.sentry, this.sentry + size)
+            },
+            update() {
+                this.page++;
+                this.load()
+            },
+            resetObserver() {
+                this.observer = [
+                    this.sentry
+                        ? observer(this.$refs.list.childNodes[0], this.preBlock)
+                        : '',
+                    observer(this.$refs.list.childNodes[LIST_SIZE - 1], this.nextBlock)
+                ]
+            },
+            preBlock() {
+                this.sentry -= LIST_SIZE / 2;
+                this.$nextTick(() => {
+                    this.$refs.list.style.paddingTop = `${20 * this.sentry}vh`;
+                    this.$refs.list.style.paddingBottom = `${20 *
+                    (this.bottomSentry - this.sentry - LIST_SIZE)}vh`;
+                    this.resetObserver()
+                })
+            },
+            nextBlock() {
+                this.observer.map(e => {
+                    if (e) e.disconnect()
+                });
+                this.sentry += LIST_SIZE / 2;
+                if (this.sentry + LIST_SIZE > this.bottomSentry)
+                  this.bottomSentry = this.sentry + LIST_SIZE
+                if (this.content.length <= this.sentry + LIST_SIZE) this.update(); // awaite
+
+                this.setContent();
+                this.$nextTick(() => {
+                    this.$refs.list.style.paddingTop = `${20 * this.sentry}vh`;
+                    this.$refs.list.style.paddingBottom = `${this.bottomSentry -
+                    this.sentry -
+                    LIST_SIZE}vh`;
+                    this.resetObserver()
+                })
+            }
+        }
+    })
+</script>
+</body>
+</html>

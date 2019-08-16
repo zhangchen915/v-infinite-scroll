@@ -8,9 +8,16 @@
 <style>
     .app {
         margin: 0 auto;
-        display: grid;
-        grid-template-columns: 300px 300px 300px 1fr;
-        height: 300px;
+        width: 300px;
+    }
+
+    .list-wrap {
+        height: 98vh;
+        overflow-y: scroll;
+    }
+
+    .list {
+        box-sizing: border-box;
     }
 
     .item {
@@ -101,8 +108,6 @@
                 this.sentry -= LIST_SIZE / 2;
                 this.$nextTick(() => {
                     this.$refs.list.style.paddingTop = `${20 * this.sentry}vh`;
-                    this.$refs.list.style.paddingBottom = `${20 *
-                    (this.bottomSentry - this.sentry - LIST_SIZE)}vh`;
                     this.resetObserver()
                 })
             },
@@ -111,16 +116,15 @@
                     if (e) e.disconnect()
                 });
                 this.sentry += LIST_SIZE / 2;
-                if (this.sentry + LIST_SIZE > this.bottomSentry)
-                  this.bottomSentry = this.sentry + LIST_SIZE
+                if (this.sentry + LIST_SIZE > this.bottomSentry) {
+                    this.bottomSentry = this.sentry + LIST_SIZE;
+                    this.$refs.list.style.height = `${20 * this.bottomSentry}vh`;
+                }
                 if (this.content.length <= this.sentry + LIST_SIZE) this.update(); // awaite
 
                 this.setContent();
                 this.$nextTick(() => {
                     this.$refs.list.style.paddingTop = `${20 * this.sentry}vh`;
-                    this.$refs.list.style.paddingBottom = `${this.bottomSentry -
-                    this.sentry -
-                    LIST_SIZE}vh`;
                     this.resetObserver()
                 })
             }

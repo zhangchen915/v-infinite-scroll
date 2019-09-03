@@ -19,6 +19,7 @@ function setUrl(el, src, backgroundStyle) {
         el.src = src;
         el.setAttribute('loading', '');
         el.onload = () => {
+            el.removeAttribute('loading');
             el.setAttribute('loaded', '')
         }
     } else {
@@ -77,6 +78,7 @@ const loadImage = option => ({
     },
     unbind(el) {
         el[ctx] = null;
+        el.onload = null;
     }
 });
 

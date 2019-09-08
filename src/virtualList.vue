@@ -1,15 +1,15 @@
 <template>
-    <div class="list-wrap" >
+    <div class="list-wrap">
         <div class="list" ref="list">
-            <div  :key="sentry + i" v-for="(e, i) in listContent">
-                <slot :item="e" class="item"></slot>
+            <div :key="sentry + i" class="item" v-for="(e, i) in listContent">
+                <slot :index="sentry + i" :line="e"></slot>
             </div>
         </div>
     </div>
 </template>
 
 <script>
-    const LIST_SIZE = 14;
+    const LIST_SIZE = 16;
 
     function observer(el, cb) {
         const observer = new IntersectionObserver(
@@ -40,25 +40,27 @@
                 sentry: 0,
                 style: {},
                 bottomSentry: LIST_SIZE,
-                observer: []
+                observer: [],
+                itemHeight: 0
             }
         },
-        created() {
-            this.getMore();
-            this.setContent()
-        },
-        mounted() {
-            this.observer = [
-                void 0,
-                observer(this.$refs.list.childNodes[LIST_SIZE - 1], this.nextBlock)
-            ]
+        async created() {
+            await this.getMore();
+            this.setContent();
+            this.$nextTick().then(() => {
+                this.observer = [
+                    void 0,
+                    observer(this.$refs.list.childNodes[LIST_SIZE - 1], this.nextBlock)
+                ];
+                this.itemHeight = document.querySelector('.item').offsetHeight;
+            })
         },
         methods: {
             setContent(size = LIST_SIZE) {
                 this.listContent = this.content.slice(this.sentry, this.sentry + size)
             },
-            getMore() {
-                this.content = [...this.content, ...this.load()]
+            async getMore() {
+                this.content = [...this.content, ...(await this.load())]
             },
             resetObserver() {
                 this.observer = [
@@ -71,24 +73,25 @@
             preBlock() {
                 this.sentry -= LIST_SIZE / 2;
                 this.$nextTick(() => {
-                    this.$refs.list.style.paddingTop = `${20 * this.sentry}vh`;
+                    this.$refs.list.style.paddingTop = `${this.itemHeight * this.sentry}px`;
                     this.resetObserver()
                 })
             },
-            nextBlock() {
+            async nextBlock() {
                 this.observer.map(e => {
                     if (e) e.disconnect()
                 });
                 this.sentry += LIST_SIZE / 2;
-                if (this.sentry + LIST_SIZE > this.bottomSentry) {
+                if (this.sentry + LIST_SIZE >= this.bottomSentry) {
                     this.bottomSentry = this.sentry + LIST_SIZE;
-                    this.$refs.list.style.height = `${20 * this.bottomSentry}vh`;
+                    this.$refs.list.style.height = `${this.itemHeight *
+                    this.bottomSentry}px`
                 }
-                if (this.content.length <= this.sentry + LIST_SIZE) this.getMore(); // awaite
+                if (this.content.length <= this.sentry + LIST_SIZE) await this.getMore();
 
                 this.setContent();
                 this.$nextTick(() => {
-                    this.$refs.list.style.paddingTop = `${20 * this.sentry}vh`;
+                    this.$refs.list.style.paddingTop = `${this.itemHeight * this.sentry}px`;
                     this.resetObserver()
                 })
             }
@@ -98,17 +101,12 @@
 
 <style scoped>
     .list-wrap {
+        display: flex;
         height: 98vh;
         overflow-y: scroll;
     }
 
     .list {
         box-sizing: border-box;
-    }
-
-    .item {
-        height: 20vh;
-        text-align: center;
-        border: dashed 1px gray;
     }
 </style>

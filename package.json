@@ -29,7 +29,7 @@
   "dependencies": {
     "intersection-observer": "^0.7.0",
     "rollup-plugin-commonjs": "^10.0.2",
-    "rollup-plugin-vue": "^5.0.1",
+    "rollup-plugin-vue": "^6.0.0",
     "throttle-debounce": "^2.1.0",
     "vue": "^2.6.10",
     "vue-template-compiler": "^2.6.10"
